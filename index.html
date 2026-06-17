@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080b0c">
+  <title>LedgerX · 加密交易日志</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="app-view-dashboard">
+  <div class="noise"></div>
+  <aside class="sidebar">
+    <a class="brand" href="#"><span class="brand-mark">L</span><span>LEDGER<span class="accent">X</span></span></a>
+    <nav>
+      <button class="nav-item active" data-view="dashboard"><span>⌁</span>总览</button>
+      <button class="nav-item" data-view="trades"><span>↗</span>交易记录</button>
+      <button class="nav-item" data-view="analytics"><span>◫</span>数据分析</button>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="sync"><i></i><span>数据已保存在本机</span></div>
+      <button class="icon-button" id="themeToggle" title="切换明暗主题">☼</button>
+    </div>
+  </aside>
+
+  <main>
+    <header>
+      <div>
+        <p class="eyebrow" id="todayLabel"></p>
+        <h1>交易<span class="muted">总览</span></h1>
+      </div>
+      <div class="header-actions">
+        <button class="button ghost" id="exportBtn">导出 CSV</button>
+        <button class="button primary" id="openTradeModal"><span>＋</span> 记录交易</button>
+      </div>
+    </header>
+
+    <section class="stats-grid" id="dashboard">
+      <article class="stat-card capital-card">
+        <div class="stat-head"><span>账户本金</span><button type="button" class="mini-action" id="openCapitalModal">设置</button></div>
+        <strong id="principalAmount">$0.00</strong>
+        <div class="stat-foot"><span id="equityAmount">权益 $0.00</span><span>本金 + 净利润</span></div>
+      </article>
+      <article class="stat-card hero-stat">
+        <div class="stat-head"><span>总净利润</span><i class="status-dot"></i></div>
+        <strong id="netProfit">$0.00</strong>
+        <div class="stat-foot"><span id="profitChange" class="pill up">+0.00%</span><span>全部时间</span></div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-head"><span>胜率</span><span class="mini-icon">◎</span></div>
+        <strong id="winRate">0.0%</strong>
+        <div class="progress"><i id="winRateBar"></i></div>
+        <div class="stat-foot"><span id="winLoss">0 盈 / 0 亏</span><span>已平仓</span></div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-head"><span>盈亏比</span><span class="mini-icon">↗</span></div>
+        <strong id="profitFactor">0.00</strong>
+        <div class="stat-foot"><span>平均盈利 / 平均亏损</span></div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-head"><span>交易次数</span><span class="mini-icon">#</span></div>
+        <strong id="tradeCount">0</strong>
+        <div class="stat-foot"><span id="openCount">0 笔持仓中</span><span>累计</span></div>
+      </article>
+    </section>
+
+    <section class="analytics-stack" id="analytics">
+      <article class="panel chart-panel trend-panel">
+        <div class="panel-head">
+          <div><p class="eyebrow">PERFORMANCE</p><h2>累计收益</h2></div>
+        </div>
+        <div class="chart-wrap">
+          <div class="chart-y"><span>$8k</span><span>$4k</span><span>$0</span><span>−$4k</span></div>
+          <svg id="profitChart" viewBox="0 0 800 240" preserveAspectRatio="none" role="img" aria-label="累计收益曲线">
+            <defs><linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#d6ff3f" stop-opacity=".25"/><stop offset="100%" stop-color="#d6ff3f" stop-opacity="0"/></linearGradient></defs>
+            <g class="grid-lines"><line x1="0" y1="20" x2="800" y2="20"/><line x1="0" y1="87" x2="800" y2="87"/><line x1="0" y1="154" x2="800" y2="154"/><line x1="0" y1="220" x2="800" y2="220"/></g>
+            <path id="chartArea" class="chart-area" d=""></path>
+            <path id="chartLine" class="chart-line" d=""></path>
+            <g id="chartDots" class="chart-dots"></g>
+          </svg>
+          <div id="emptyChart" class="empty-chart">记录第一笔已平仓交易，收益曲线会出现在这里</div>
+        </div>
+      </article>
+
+      <article class="panel chart-panel trend-panel">
+        <div class="panel-head">
+          <div><p class="eyebrow">DISCIPLINE TREND</p><h2>交易纪律变化</h2></div>
+        </div>
+        <div class="chart-wrap">
+          <div class="chart-y"><span>100%</span><span>67%</span><span>33%</span><span>0%</span></div>
+          <svg id="disciplineTrendChart" viewBox="0 0 800 240" preserveAspectRatio="none" role="img" aria-label="交易纪律变化曲线">
+            <g class="grid-lines"><line x1="0" y1="20" x2="800" y2="20"/><line x1="0" y1="87" x2="800" y2="87"/><line x1="0" y1="154" x2="800" y2="154"/><line x1="0" y1="220" x2="800" y2="220"/></g>
+            <path id="disciplineTrendLine" class="chart-line discipline-line" d=""></path>
+            <g id="disciplineTrendDots" class="chart-dots discipline-dots"></g>
+          </svg>
+          <div id="emptyDisciplineChart" class="empty-chart">每笔交易保存后，纪律执行率会按顺序连成曲线</div>
+        </div>
+      </article>
+
+      <article class="panel chart-panel trend-panel">
+        <div class="panel-head">
+          <div><p class="eyebrow">SCORE TREND</p><h2>交易评分变化</h2></div>
+        </div>
+        <div class="chart-wrap">
+          <div class="chart-y"><span>高</span><span></span><span></span><span>低</span></div>
+          <svg id="scoreTrendChart" viewBox="0 0 800 240" preserveAspectRatio="none" role="img" aria-label="交易评分变化曲线">
+            <g class="grid-lines"><line x1="0" y1="20" x2="800" y2="20"/><line x1="0" y1="87" x2="800" y2="87"/><line x1="0" y1="154" x2="800" y2="154"/><line x1="0" y1="220" x2="800" y2="220"/></g>
+            <path id="scoreTrendLine" class="chart-line score-line" d=""></path>
+            <g id="scoreTrendDots" class="chart-dots score-dots"></g>
+          </svg>
+          <div id="emptyScoreChart" class="empty-chart">勾选评分条目后，每一单的评分会在这里形成曲线</div>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel trades-panel" id="trades">
+      <div class="panel-head trade-list-head">
+        <div><p class="eyebrow" id="tradeListEyebrow">TODAY LOG</p><h2 id="tradeListTitle">今日交易</h2></div>
+        <div class="filters">
+          <button type="button" class="button ghost compact-button" id="openLogSettingsModal">设置记录</button>
+          <select id="symbolFilter"><option value="all">所有币种</option></select>
+          <select id="statusFilter"><option value="all">全部状态</option><option value="closed">已平仓</option><option value="open">持仓中</option></select>
+          <input id="searchInput" type="search" placeholder="搜索币种或策略">
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead id="tradeTableHead"></thead>
+          <tbody id="tradeTableBody"></tbody>
+        </table>
+        <div id="emptyTrades" class="empty-state"><span>＋</span><h3 id="emptyTradesTitle">今天还没有交易记录</h3><p id="emptyTradesText">记录今天的第一笔交易，保持复盘节奏。</p><button class="button primary" id="emptyAddBtn">记录第一笔交易</button></div>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="tradeModal">
+    <form id="tradeForm" method="dialog">
+      <input type="hidden" name="id">
+      <div class="modal-head"><div><p class="eyebrow" id="tradeModalEyebrow">NEW ENTRY</p><h2 id="tradeModalTitle">记录交易</h2></div><button type="button" class="close-button" id="closeModal">×</button></div>
+      <div class="form-grid">
+        <label data-field="symbol"><span>交易对</span><input name="symbol" required placeholder="BTC/USDT" autocomplete="off"></label>
+        <label data-field="date"><span>日期</span><input name="date" type="date" required></label>
+        <label data-field="side"><span>方向</span><select name="side"><option value="long">做多 LONG</option><option value="short">做空 SHORT</option></select></label>
+        <label data-field="status"><span>状态</span><select name="status" id="formStatus"><option value="closed">已平仓</option><option value="open">持仓中</option></select></label>
+        <label data-field="entry"><span>入场价</span><input name="entry" type="number" min="0" step="any" required placeholder="0.00"></label>
+        <label data-field="exit"><span>出场价</span><input name="exit" type="number" min="0" step="any" placeholder="0.00"></label>
+        <label data-field="size"><span>仓位金额 (USDT)</span><input name="size" type="number" min="0" step="any" required placeholder="1000"></label>
+        <label data-field="risk"><span>风险比例</span><input name="risk" type="number" min="0" max="100" step="0.1" placeholder="1.0"></label>
+        <label data-field="stopLoss"><span>止损价</span><input name="stopLoss" type="number" min="0" step="any" placeholder="0.00"></label>
+        <label data-field="strategy"><span>策略</span><input name="strategy" placeholder="突破 / 趋势 / 反转" autocomplete="off"></label>
+        <div class="full checklist-field" data-field="discipline">
+          <div class="checklist-head"><span>交易纪律执行</span><button type="button" id="editDisciplineFromTrade">设置纪律</button></div>
+          <div class="checklist-options" id="tradeDisciplineChecks"></div>
+        </div>
+        <div class="full checklist-field" data-field="score">
+          <div class="checklist-head"><span>交易评分</span><button type="button" id="editScoreFromTrade">设置评分</button></div>
+          <div class="checklist-options" id="tradeScoreChecks"></div>
+        </div>
+        <label class="full" data-field="notes"><span>交易计划与复盘</span><textarea name="notes" rows="3" placeholder="为什么入场？执行得怎么样？"></textarea></label>
+      </div>
+      <div class="modal-actions"><button type="button" class="button ghost" id="cancelModal">取消</button><button type="submit" class="button primary">保存交易</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="disciplineModal">
+    <form id="disciplineForm" method="dialog">
+      <div class="modal-head">
+        <div><p class="eyebrow">DISCIPLINE SETUP</p><h2>设置交易纪律</h2></div>
+        <button type="button" class="close-button" id="closeDisciplineModal">×</button>
+      </div>
+      <div class="rule-add">
+        <input id="disciplineInput" placeholder="例如：必须有明确止损">
+        <button type="submit" class="button primary">添加</button>
+      </div>
+      <div class="rule-list" id="disciplineRuleList"></div>
+      <p class="modal-note">这些规则会出现在“记录交易”弹窗里，保存交易时逐条勾选即可统计执行率。</p>
+    </form>
+  </dialog>
+
+  <dialog id="capitalModal">
+    <form id="capitalForm" method="dialog">
+      <div class="modal-head">
+        <div><p class="eyebrow">CAPITAL SETUP</p><h2>设置账户本金</h2></div>
+        <button type="button" class="close-button" id="closeCapitalModal">×</button>
+      </div>
+      <label class="single-field"><span>账户本金 (USDT)</span><input id="principalInput" type="number" min="0" step="any" placeholder="例如：10000"></label>
+      <div class="modal-actions"><button type="button" class="button ghost" id="cancelCapitalModal">取消</button><button type="submit" class="button primary">保存本金</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="logSettingsModal">
+    <form id="logSettingsForm" method="dialog">
+      <div class="modal-head">
+        <div><p class="eyebrow">TRADE LOG SETUP</p><h2>设置交易记录</h2></div>
+        <button type="button" class="close-button" id="closeLogSettingsModal">×</button>
+      </div>
+      <div class="settings-grid">
+        <section>
+          <h3>记录时显示</h3>
+          <div id="recordFieldSettings" class="settings-list"></div>
+        </section>
+        <section>
+          <h3>列表显示</h3>
+          <div id="tableColumnSettings" class="settings-list"></div>
+        </section>
+      </div>
+      <div class="score-settings">
+        <div class="checklist-head"><span>评分系统</span></div>
+        <div class="score-add">
+          <input id="scoreNameInput" placeholder="评分条目，例如：顺势交易">
+          <input id="scorePointsInput" type="number" step="1" placeholder="分数">
+          <button type="button" class="button primary" id="addScoreRule">添加</button>
+        </div>
+        <div class="rule-list" id="scoreRuleList"></div>
+      </div>
+      <p class="modal-note">两边的名称都可以直接修改；点击“记录时显示”中的条目，可把对应字段复制到“列表显示”。评分总分会固定显示在表格最后一列。</p>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast">交易记录已保存</div>
+  <script src="app.js"></script>
+</body>
+</html>
